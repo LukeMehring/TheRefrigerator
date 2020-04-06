@@ -14,7 +14,7 @@ class EndPointTest extends Specification {
     MainClassApplicationUnderTest appUnderTest = new MainClassApplicationUnderTest(FridgeMain.class)
     ObjectMapper mapper = new ObjectMapper();
 
-    def "First Spock Test Temp"() {
+    def "End point test"(){
         given:
         TestHttpClient client = appUnderTest.getHttpClient()
         String fridgeName1 = "Fridge-3"
@@ -43,36 +43,40 @@ class EndPointTest extends Specification {
 
         when:
         //Create a bunch (only 2 really)
-        Refrigerator altFridge1Created   = callFridgeWithBody(client, altFridge1, "POST")
-        Refrigerator startFridge1Created = callFridgeWithBody(client, startFridge1, "POST")
-        Refrigerator startFridge2Created = callFridgeWithBody(client, startFridge2, "POST")
-        Refrigerator startFridge3Created = callFridgeWithBody(client, startFridge3, "POST")
+        Refrigerator altFridge1Created   = callFridgeWithBody(client, altFridge1)
+        Refrigerator startFridge1Created = callFridgeWithBody(client, startFridge1)
+        Refrigerator startFridge2Created = callFridgeWithBody(client, startFridge2)
+        Refrigerator startFridge3Created = callFridgeWithBody(client, startFridge3)
 
         ReceivedResponse getAllResp = client.request("refrigerator/all", { RequestSpec req ->
             req.method("GET")
+            req.basicAuth("username", "username")
         })
+        assert getAllResp.getStatusCode() == 200 //Make sure it worked
         List<Refrigerator> allList = mapper.readValue(getAllResp.body.getText(), mapper.getTypeFactory().constructCollectionType(List.class, Refrigerator.class)) as List<Refrigerator>
 
         //Get Single
-        ReceivedResponse responseGetSingle = client.request("refrigerator/" + fridgeName2, { RequestSpec req ->
+        ReceivedResponse responseGetSingle = client.request("refrigerator/get/" + fridgeName2, { RequestSpec req ->
             req.method("GET")
+            req.basicAuth("username", "username")
         })
+        assert responseGetSingle.getStatusCode() == 200 //Make sure it worked
         Refrigerator singleGetResponse = mapper.readValue(responseGetSingle.getBody().getText(),  Refrigerator.class)
 
         //Delete1
         ReceivedResponse responseDelete1 = client.request("refrigerator/" + fridgeName2 + "/delete", { RequestSpec req ->
             req.method("DELETE")
+            req.basicAuth("username", "username")
         })
+        assert responseDelete1.getStatusCode() == 200 //Make sure it worked
         //Delete2
         ReceivedResponse responseDelete2 = client.request("refrigerator/" + fridgeName1 + "/delete", { RequestSpec req ->
             req.method("DELETE")
+            req.basicAuth("username", "username")
         })
+        assert responseDelete2.getStatusCode() == 200 //Make sure it worked
 
         then:
-        assert getAllResp.getStatusCode() == 200 //Make sure it worked
-        assert responseGetSingle.getStatusCode() == 200 //Make sure it worked
-        assert responseDelete1.getStatusCode() == 200 //Make sure it worked
-        assert responseDelete2.getStatusCode() == 200 //Make sure it worked
         assert altFridge1Created.equals(altFridge1)
         assert allList.size() == 2
         assert singleGetResponse.getItems().size() == 2
@@ -81,10 +85,11 @@ class EndPointTest extends Specification {
         assert singleGetResponse.getItems().get(new Items(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
     }
 
-    Refrigerator callFridgeWithBody(TestHttpClient client, Refrigerator refrigerator, String method) {
-        ReceivedResponse responsePost = client.request("refrigerator", { RequestSpec req ->
-            req.method(method)
+    Refrigerator callFridgeWithBody(TestHttpClient client, Refrigerator refrigerator) {
+        ReceivedResponse responsePost = client.request("refrigerator/post", { RequestSpec req ->
+            req.method("POST")
             req.getBody().text(mapper.writeValueAsString(refrigerator))
+            req.basicAuth("username", "username")
         })
         assert responsePost.getStatusCode() == 200 //make sure it worked
         return mapper.readValue(responsePost.getBody().getText(),  Refrigerator.class)
