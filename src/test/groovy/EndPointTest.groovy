@@ -5,7 +5,7 @@ import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.http.TestHttpClient
 import spock.lang.Specification
 
-class SpockTest extends Specification {
+class EndPointTest extends Specification {
 
     MainClassApplicationUnderTest appUnderTest = new MainClassApplicationUnderTest(FridgeMain.class)
 
