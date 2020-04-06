@@ -1,6 +1,8 @@
 package luke.mehring.fridge;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import luke.mehring.fridge.database.MongoDatabase;
+import luke.mehring.fridge.database.Refrigerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.server.RatpackServer;
@@ -14,6 +16,7 @@ public class FridgeMain {
     public static void main(String args[]) throws Exception {
         //Get MongoDB connection going
         MongoDatabase mongo = new MongoDatabase();
+        ObjectMapper mapper = new ObjectMapper();
 
         //Start the RATPACK
         RatpackServer.start(server -> server.handlers(chain -> chain
@@ -28,12 +31,18 @@ public class FridgeMain {
                         ctx.render(json(mongo.getRefrigerator(name)));
                     })
                     .post(ctx -> { //create
-                        logger.debug("Creating one refrigerator via RESTAPI");
-                        ctx.render("Create One");
+                        ctx.getRequest().getBody().then(data -> {
+                            Refrigerator request = mapper.readValue(data.getText(), Refrigerator.class);
+                            logger.debug("Creating one refrigerator ("+request.getName()+") via RESTAPI");
+                            ctx.render(json(mongo.createOrUpdate(request)));
+                        });
                     })
                     .put(ctx -> { //update
-                        logger.debug("Updating one refrigerator via RESTAPI");
-                        ctx.render("Update One");
+                        ctx.getRequest().getBody().then(data -> {
+                            Refrigerator request = mapper.readValue(data.getText(), Refrigerator.class);
+                            logger.debug("Updating one refrigerator ("+request.getName()+") via RESTAPI");
+                            ctx.render(json(mongo.createOrUpdate(request)));
+                        });
                     })
                     .delete(":name", ctx -> { // Delete fridge by ID
                         String name = ctx.getPathTokens().get("name");

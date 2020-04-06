@@ -22,10 +22,8 @@ public class MongoDatabase {
     private static final String COLLECTION_NAME = "refrigerator";
 
     private MongoClient mongo;
-    private ObjectMapper mapper;
 
     public MongoDatabase() {
-        mapper = new ObjectMapper();
         mongo = new MongoClient( "localhost" , 12345 );
         logger.debug("Connected to MongoDB");
         initDB();
