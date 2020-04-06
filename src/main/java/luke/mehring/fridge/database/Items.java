@@ -12,7 +12,7 @@ public class Items {
 
     public Items(BasicDBObject dbObj) {
         this.setName(dbObj.getString("name"));
-        this.setType((ItemType)dbObj.get("type"));
+        this.setType(ItemType.findByValue(dbObj.getString("type")));
         this.setCount(dbObj.getInt("count"));
     }
 
@@ -25,7 +25,7 @@ public class Items {
     public BasicDBObject getDBDocument() {
         BasicDBObject itemDoc = new BasicDBObject();
         itemDoc.put("name", getName());
-        itemDoc.put("type", getType());
+        itemDoc.put("type", getType().getValue());
         itemDoc.put("count", getCount());
         return itemDoc;
     }

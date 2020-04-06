@@ -40,8 +40,13 @@ public class Refrigerator {
         items.putAll(newItemMap);
     }
 
-    public void addItem(Items items) {
-
+    public void addItem(Items item) {
+        Items oldItem = getItems().get(item.getKey());
+        if (oldItem == null) {
+            getItems().put(item.getKey(), item);
+        } else {
+            oldItem.setCount(oldItem.getCount() + item.getCount());
+        }
     }
 
 
