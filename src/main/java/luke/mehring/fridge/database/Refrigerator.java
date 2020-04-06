@@ -55,10 +55,10 @@ public class Refrigerator {
             getItems().put(item.getKey(), item);
         } else {
             int newCount = oldItem.getCount() + item.getCount();
-            if (newCount != 0) {
+            if (newCount > 0) {
                 oldItem.setCount(newCount);
             } else {
-                //If its zero, we can just remove
+                //If its zero or lower, we can just remove
                 getItems().remove(item.getKey());
             }
         }

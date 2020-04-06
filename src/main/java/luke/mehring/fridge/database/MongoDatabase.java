@@ -8,7 +8,9 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import luke.mehring.fridge.exception.NoFridgesExcpetion;
+import luke.mehring.fridge.exception.RefrigeratorValidationException;
 import luke.mehring.fridge.exception.TooManyFridgesExcpetion;
+import luke.mehring.fridge.validation.RefrigeratorItemValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +108,7 @@ public class MongoDatabase {
         }
     }
 
-    public Refrigerator createOrUpdate(Refrigerator fridge) throws TooManyFridgesExcpetion, IOException, NoFridgesExcpetion {
+    public Refrigerator createOrUpdate(Refrigerator fridge) throws TooManyFridgesExcpetion, IOException, NoFridgesExcpetion, RefrigeratorValidationException {
         Refrigerator fridgeDB = null;
         try {
             fridgeDB = getRefrigerator(fridge.getName());
@@ -125,16 +127,22 @@ public class MongoDatabase {
         return update(fridgeDB);
     }
 
-    private Refrigerator create(Refrigerator fridge) throws IOException, TooManyFridgesExcpetion, NoFridgesExcpetion {
+    private Refrigerator create(Refrigerator fridge) throws IOException, TooManyFridgesExcpetion, NoFridgesExcpetion, RefrigeratorValidationException {
         MongoCollection collection = getCollection();
+
+        //Validate before saving
+        RefrigeratorItemValidator.validate(fridge);
 
         collection.insertOne(fridge.getDBDocument());
 
         return getRefrigerator(fridge.getName());
     }
 
-    private Refrigerator update(Refrigerator fridge) throws IOException, TooManyFridgesExcpetion, NoFridgesExcpetion {
+    private Refrigerator update(Refrigerator fridge) throws IOException, TooManyFridgesExcpetion, NoFridgesExcpetion, RefrigeratorValidationException {
         MongoCollection collection = getCollection();
+
+        //Validate before saving
+        RefrigeratorItemValidator.validate(fridge);
 
         BasicDBObject query = new BasicDBObject();
         query.put("name", fridge.getName());

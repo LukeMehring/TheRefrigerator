@@ -56,7 +56,7 @@ class DatabaseTest extends Specification {
 
         Refrigerator startFridge3 = new Refrigerator()
         startFridge3.setName(fridgeName)
-        startFridge3.addItem(new Items(item2Name, ItemType.PIZZA, -15))
+        startFridge3.addItem(new Items(item2Name, ItemType.PIZZA, -16))
 
         when:
         mongo.createOrUpdate(startFridge1)
@@ -73,5 +73,51 @@ class DatabaseTest extends Specification {
         assert finalFridge.getItems().get(new Items(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
         assert finalFridge.getItems().get(new Items(item2Name, ItemType.PIZZA, 0).getKey()) == null
         assert finalFridge.getItems().get(new Items(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
+    }
+
+
+    def "Test Max Soda of 12"() {
+        given:
+        String fridgeName1 = "Fridge-32"
+        String fridgeName2 = "Fridge-15"
+        String item1Name = "Item-1"
+        String item2Name = "Item-2"
+
+        Refrigerator startFridge1 = new Refrigerator()
+        startFridge1.setName(fridgeName1)
+        startFridge1.addItem(new Items(item1Name, ItemType.SODA, 5))
+        startFridge1.addItem(new Items(item2Name, ItemType.SODA, 7))
+
+        Refrigerator startFridge2 = new Refrigerator()
+        startFridge2.setName(fridgeName2)
+        startFridge2.addItem(new Items(item2Name, ItemType.SODA, 5))
+        startFridge2.addItem(new Items(item2Name, ItemType.SODA, 8))
+
+        Refrigerator startFridge3 = new Refrigerator()
+        startFridge3.setName(fridgeName1)
+        startFridge3.addItem(new Items(item2Name, ItemType.SODA, 1))
+
+        when:
+        try { //work
+            mongo.createOrUpdate(startFridge1)
+        } catch (Exception e) {}
+        try { //fail
+            mongo.createOrUpdate(startFridge2)
+        } catch (Exception e) {}
+        try { //fail
+            mongo.createOrUpdate(startFridge3)
+        } catch (Exception e) {}
+
+        Refrigerator finalFridge1 = mongo.getRefrigerator(fridgeName1)
+
+        int deleteCount1 = mongo.deleteRefrigerator(fridgeName1)
+        int deleteCount2 = mongo.deleteRefrigerator(fridgeName2)
+
+        then:
+        assert deleteCount1 == 1
+        assert deleteCount2 == 0
+        assert finalFridge1.getItems().size() == 2
+        assert finalFridge1.getItems().get(new Items(item1Name, ItemType.SODA, 0).getKey()).getCount() == 5
+        assert finalFridge1.getItems().get(new Items(item2Name, ItemType.SODA, 0).getKey()).getCount() == 7
     }
 }
