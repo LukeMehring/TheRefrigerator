@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'io.ratpack:ratpack-gradle:1.7.6'
+    }
+}
+
+apply plugin: "io.ratpack.ratpack-java"
+apply plugin: "groovy"
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+dependencies {
+
+    testImplementation "junit:junit:4.12"
+    compile group: 'org.eclipse.persistence', name: 'eclipselink', version: '2.5.0'
+
+    runtimeOnly "org.slf4j:slf4j-simple:1.7.21"
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
