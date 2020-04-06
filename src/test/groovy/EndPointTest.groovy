@@ -48,7 +48,7 @@ class EndPointTest extends Specification {
         Refrigerator startFridge2Created = callFridgeWithBody(client, startFridge2)
         Refrigerator startFridge3Created = callFridgeWithBody(client, startFridge3)
 
-        ReceivedResponse getAllResp = client.request("all", { RequestSpec req ->
+        ReceivedResponse getAllResp = client.request("fridges", { RequestSpec req ->
             req.method("GET")
             req.basicAuth("username", "username")
         })
@@ -56,7 +56,7 @@ class EndPointTest extends Specification {
         List<Refrigerator> allList = mapper.readValue(getAllResp.body.getText(), mapper.getTypeFactory().constructCollectionType(List.class, Refrigerator.class)) as List<Refrigerator>
 
         //Get Single
-        ReceivedResponse responseGetSingle = client.request("get/" + fridgeName2,{ RequestSpec req ->
+        ReceivedResponse responseGetSingle = client.request("fridges/" + fridgeName2,{ RequestSpec req ->
             req.method("GET")
             req.basicAuth("username", "username")
         })
@@ -64,13 +64,13 @@ class EndPointTest extends Specification {
         Refrigerator singleGetResponse = mapper.readValue(responseGetSingle.getBody().getText(),  Refrigerator.class)
 
         //Delete1
-        ReceivedResponse responseDelete1 = client.request(fridgeName2 + "/delete", { RequestSpec req ->
+        ReceivedResponse responseDelete1 = client.request("fridges/" + fridgeName2, { RequestSpec req ->
             req.method("DELETE")
             req.basicAuth("username", "username")
         })
         assert responseDelete1.getStatusCode() == 200 //Make sure it worked
         //Delete2
-        ReceivedResponse responseDelete2 = client.request(fridgeName1 + "/delete", { RequestSpec req ->
+        ReceivedResponse responseDelete2 = client.request("fridges/" + fridgeName1, { RequestSpec req ->
             req.method("DELETE")
             req.basicAuth("username", "username")
         })
@@ -86,7 +86,7 @@ class EndPointTest extends Specification {
     }
 
     Refrigerator callFridgeWithBody(TestHttpClient client, Refrigerator refrigerator) {
-        ReceivedResponse responsePost = client.request(refrigerator.getName() + "/save", { RequestSpec req ->
+        ReceivedResponse responsePost = client.request("fridges", { RequestSpec req ->
             req.method("POST")
             req.getBody().text(mapper.writeValueAsString(refrigerator))
             req.basicAuth("username", "username")
