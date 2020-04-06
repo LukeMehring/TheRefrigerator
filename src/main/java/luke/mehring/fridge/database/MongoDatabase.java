@@ -7,11 +7,9 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import luke.mehring.fridge.exception.NoFridgesExcpetion;
 import luke.mehring.fridge.exception.TooManyFridgesExcpetion;
-import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Basic;
 import java.io.IOException;
 
 public class MongoDatabase {
@@ -78,6 +76,25 @@ public class MongoDatabase {
         return new Refrigerator(documentToReturn);
     }
 
+    public int deleteRefrigerator(String name) throws NoFridgesExcpetion, TooManyFridgesExcpetion {
+        MongoCollection collection = getCollection();
+
+        BasicDBObject searchQuery = new BasicDBObject();
+        searchQuery.put("name", name);
+
+        long size = collection.countDocuments(searchQuery);
+        if (size > 1) {
+            String msg = "Found multiple fridges with same name ("+name+")!";
+            TooManyFridgesExcpetion exception = new TooManyFridgesExcpetion(msg);
+            throw exception;
+        } else if (size == 1) {
+            collection.deleteOne(searchQuery);
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     public Refrigerator createOrUpdate(Refrigerator fridge) throws TooManyFridgesExcpetion, IOException, NoFridgesExcpetion {
         Refrigerator fridgeDB = null;
         try {
@@ -111,7 +128,7 @@ public class MongoDatabase {
         BasicDBObject query = new BasicDBObject();
         query.put("name", fridge.getName());
 
-        collection.updateOne(query, fridge.getDBDocument());
+        collection.replaceOne(query, fridge.getDBDocument());
 
         return getRefrigerator(fridge.getName());
     }

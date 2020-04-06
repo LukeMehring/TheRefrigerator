@@ -46,15 +46,7 @@ public class Refrigerator {
     public void update(Refrigerator that) {
         this.setName(that.getName());
 
-        Map<String, Items> newItemMap = that.getItems();
-
-        items.keySet().forEach(itemKey -> {
-            Items oldItem = items.get(itemKey);
-            Items newItemUpdate = newItemMap.remove(itemKey);
-            oldItem.setCount(oldItem.getCount() + newItemUpdate.getCount());
-        });
-
-        items.putAll(newItemMap);
+        that.getItems().values().stream().forEach(this::addItem);
     }
 
     public void addItem(Items item) {
@@ -62,7 +54,13 @@ public class Refrigerator {
         if (oldItem == null) {
             getItems().put(item.getKey(), item);
         } else {
-            oldItem.setCount(oldItem.getCount() + item.getCount());
+            int newCount = oldItem.getCount() + item.getCount();
+            if (newCount != 0) {
+                oldItem.setCount(newCount);
+            } else {
+                //If its zero, we can just remove
+                getItems().remove(item.getKey());
+            }
         }
     }
 
