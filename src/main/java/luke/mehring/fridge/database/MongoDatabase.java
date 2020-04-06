@@ -1,7 +1,8 @@
 package luke.mehring.fridge.database;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import luke.mehring.fridge.exception.NoFridgesExcpetion;
@@ -10,10 +11,8 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.catalog.Catalog;
+import javax.persistence.Basic;
 import java.io.IOException;
-import java.sql.Ref;
-import java.util.MissingResourceException;
 
 public class MongoDatabase {
 
@@ -26,10 +25,8 @@ public class MongoDatabase {
     private ObjectMapper mapper;
 
     public MongoDatabase() {
-
         mapper = new ObjectMapper();
-
-        MongoClient mongo = new MongoClient( "localhost" , 12345 );
+        mongo = new MongoClient( "localhost" , 12345 );
         logger.debug("Connected to MongoDB");
         initDB();
     }
@@ -54,51 +51,71 @@ public class MongoDatabase {
         }
     }
 
-    private MongoCollection<Document> getCollection() {
-        return mongo.getDatabase(DB_NAME).getCollection(COLLECTION_NAME);
+    private MongoCollection<BasicDBObject> getCollection() {
+        return mongo.getDatabase(DB_NAME).getCollection(COLLECTION_NAME, BasicDBObject.class);
     }
 
-    public Refrigerator getRefrigerator(String name) throws NoFridgesExcpetion, TooManyFridgesExcpetion, IOException {
-       return mapper.readValue(getRefrigeratorInternal(name), Refrigerator.class);
-    }
-
-    private String getRefrigeratorInternal(String name) throws NoFridgesExcpetion, TooManyFridgesExcpetion {
+    public Refrigerator getRefrigerator(String name) throws NoFridgesExcpetion, TooManyFridgesExcpetion {
         MongoCollection collection = getCollection();
 
         BasicDBObject searchQuery = new BasicDBObject();
-        searchQuery.put("name", "name");
+        searchQuery.put("name", name);
 
         long size = collection.countDocuments(searchQuery);
         if (size > 1) {
             String msg = "Found multiple fridges with same name ("+name+")!";
             TooManyFridgesExcpetion exception = new TooManyFridgesExcpetion(msg);
-            logger.warn(msg, exception);
             throw exception;
         } else if (size == 0) {
             String msg = "No fridges found with name ("+name+")!";
             NoFridgesExcpetion exception = new NoFridgesExcpetion(msg);
-            logger.warn(msg, exception);
             throw exception;
         }
 
-        FindIterable findIterable = collection.find(searchQuery);
+        FindIterable<BasicDBObject> findIterable = collection.find(searchQuery);
 
-        Object documentToReturn = findIterable.first();
-        return documentToReturn.toString();
+        BasicDBObject documentToReturn = findIterable.first();
+        return new Refrigerator(documentToReturn);
     }
 
-    public Refrigerator createOrUpdate(Refrigerator fridge) throws TooManyFridgesExcpetion, IOException {
+    public Refrigerator createOrUpdate(Refrigerator fridge) throws TooManyFridgesExcpetion, IOException, NoFridgesExcpetion {
         Refrigerator fridgeDB = null;
         try {
             fridgeDB = getRefrigerator(fridge.getName());
-
-//            fridgeDB.update(fridge);
         } catch (NoFridgesExcpetion e) {
             //If we get here, we know that we are adding
+            return create(fridge);
         } catch (TooManyFridgesExcpetion e) {
             //if we got here, something is wrong, throw error out
+            logger.warn("Too many fridges are present with name " + fridge.getName() + " , something is wrong", e);
             throw e;
         }
-        return fridgeDB;
+
+        //If we get to here, we know no NoFridgesExcpetion or TooManyFridgesExcpetion so its update
+        fridgeDB.update(fridge);
+
+        return update(fridgeDB);
     }
+
+    private Refrigerator create(Refrigerator fridge) throws IOException, TooManyFridgesExcpetion, NoFridgesExcpetion {
+        MongoCollection collection = getCollection();
+
+        collection.insertOne(fridge.getDBDocument());
+
+        return getRefrigerator(fridge.getName());
+    }
+
+    private Refrigerator update(Refrigerator fridge) throws IOException, TooManyFridgesExcpetion, NoFridgesExcpetion {
+        MongoCollection collection = getCollection();
+
+        BasicDBObject query = new BasicDBObject();
+        query.put("name", fridge.getName());
+
+        collection.updateOne(query, fridge.getDBDocument());
+
+        return getRefrigerator(fridge.getName());
+    }
+
+
+
 }

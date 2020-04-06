@@ -1,9 +1,7 @@
-import luke.mehring.fridge.FridgeMain
+import luke.mehring.fridge.database.ItemType
+import luke.mehring.fridge.database.Items
 import luke.mehring.fridge.database.MongoDatabase
-import ratpack.http.client.ReceivedResponse
-import ratpack.http.client.RequestSpec
-import ratpack.test.MainClassApplicationUnderTest
-import ratpack.test.http.TestHttpClient
+import luke.mehring.fridge.database.Refrigerator
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
@@ -14,12 +12,14 @@ class DatabaseTest extends Specification {
     @AutoCleanup
     MongoDatabase mongo = new MongoDatabase()
 
-    def "First Spock Test Temp"() {
+    def "Refrigerator Saves"() {
         given:
-        String a = "test";
+        Refrigerator fridge = new Refrigerator()
+        fridge.setName("Fridge-1")
+        fridge.addItem(new Items("Item-1", ItemType.PIZZA, 5))
 
         when:
-        String b = a;
+        mongo.createOrUpdate(fridge)
 
 
         then:

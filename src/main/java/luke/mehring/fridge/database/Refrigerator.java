@@ -1,11 +1,49 @@
 package luke.mehring.fridge.database;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Refrigerator {
     private String name;
-    private List<Items> items = new ArrayList<>();
+    private Map<String, Items> items = new HashMap<>();
+
+    public Refrigerator () {}
+
+    public Refrigerator (BasicDBObject dbObject) {
+        setName(dbObject.getString("name"));
+        ((BasicDBList)dbObject.get("items")).stream().map(item -> new Items((BasicDBObject)item))
+                .collect(Collectors.toMap(item -> item.getKey(), item -> item));
+
+    }
+
+    public BasicDBObject getDBDocument() {
+        BasicDBObject fridgeDoc = new BasicDBObject();
+        fridgeDoc.put("name", getName());
+        fridgeDoc.put("items", getItems().values().stream().map(Items::getDBDocument).collect(Collectors.toList()));
+        return fridgeDoc;
+    }
+
+    public void update(Refrigerator that) {
+        this.setName(that.getName());
+
+        Map<String, Items> newItemMap = that.getItems();
+
+        items.keySet().forEach(itemKey -> {
+            Items oldItem = items.get(itemKey);
+            Items newItemUpdate = newItemMap.remove(itemKey);
+            oldItem.setCount(oldItem.getCount() + newItemUpdate.getCount());
+        });
+
+        items.putAll(newItemMap);
+    }
+
+    public void addItem(Items items) {
+
+    }
+
 
     public String getName() {
         return name;
@@ -15,13 +53,11 @@ public class Refrigerator {
         this.name = name;
     }
 
-    public List<Items> getItems() {
+    public Map<String, Items> getItems() {
         return items;
     }
 
-    public void setItems(List<Items> items) {
+    public void setItems(Map<String, Items> items) {
         this.items = items;
     }
-
-
 }
