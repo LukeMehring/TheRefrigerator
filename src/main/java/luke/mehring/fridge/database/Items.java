@@ -17,12 +17,6 @@ public class Items {
         this.setCount(dbObj.getInt("count"));
     }
 
-    public Items(String name, ItemType type, int count) {
-        this.setCount(count);
-        this.setName(name);
-        this.setType(type);
-    }
-
     public BasicDBObject getDBDocument() {
         BasicDBObject itemDoc = new BasicDBObject();
         itemDoc.put("name", getName());

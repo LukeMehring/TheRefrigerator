@@ -24,22 +24,22 @@ class EndPointTest extends Specification {
 
         Refrigerator altFridge1 = new Refrigerator()
         altFridge1.setName(fridgeName1)
-        altFridge1.addItem(new Items(item1Name, ItemType.SODA, 12))
+        altFridge1.addItem(createItem(item1Name, ItemType.SODA, 12))
 
         Refrigerator startFridge1 = new Refrigerator()
         startFridge1.setName(fridgeName2)
-        startFridge1.addItem(new Items(item1Name, ItemType.PIZZA, 5))
-        startFridge1.addItem(new Items(item2Name, ItemType.PIZZA, 5))
-        startFridge1.addItem(new Items(item1Name, ItemType.PIZZA, -3))
+        startFridge1.addItem(createItem(item1Name, ItemType.PIZZA, 5))
+        startFridge1.addItem(createItem(item2Name, ItemType.PIZZA, 5))
+        startFridge1.addItem(createItem(item1Name, ItemType.PIZZA, -3))
 
         Refrigerator startFridge2 = new Refrigerator()
         startFridge2.setName(fridgeName2)
-        startFridge2.addItem(new Items(item2Name, ItemType.CHEESE, 10))
-        startFridge2.addItem(new Items(item2Name, ItemType.PIZZA, 10))
+        startFridge2.addItem(createItem(item2Name, ItemType.CHEESE, 10))
+        startFridge2.addItem(createItem(item2Name, ItemType.PIZZA, 10))
 
         Refrigerator startFridge3 = new Refrigerator()
         startFridge3.setName(fridgeName2)
-        startFridge3.addItem(new Items(item2Name, ItemType.PIZZA, -15))
+        startFridge3.addItem(createItem(item2Name, ItemType.PIZZA, -15))
 
         when:
         //Create a bunch (only 2 really)
@@ -80,9 +80,9 @@ class EndPointTest extends Specification {
         assert altFridge1Created.equals(altFridge1)
         assert allList.size() == 2
         assert singleGetResponse.getItems().size() == 2
-        assert singleGetResponse.getItems().get(new Items(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
-        assert singleGetResponse.getItems().get(new Items(item2Name, ItemType.PIZZA, 0).getKey()) == null
-        assert singleGetResponse.getItems().get(new Items(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
+        assert singleGetResponse.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
+        assert singleGetResponse.getItems().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
+        assert singleGetResponse.getItems().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
     }
 
     Refrigerator callFridgeWithBody(TestHttpClient client, Refrigerator refrigerator) {
@@ -93,5 +93,12 @@ class EndPointTest extends Specification {
         })
         assert responsePost.getStatusCode() == 200 //make sure it worked
         return mapper.readValue(responsePost.getBody().getText(),  Refrigerator.class)
+    }
+
+    Items createItem(String name, ItemType type, int count) {
+        Items theItem = new Items()
+        theItem.setName(name)
+        theItem.setType(type)
+        theItem.setCount(count)
     }
 }

@@ -20,9 +20,9 @@ class DatabaseTest extends Specification {
 
         Refrigerator startFridge = new Refrigerator()
         startFridge.setName(fridgeName)
-        startFridge.addItem(new Items(item1Name, ItemType.PIZZA, 5))
-        startFridge.addItem(new Items(item2Name, ItemType.PIZZA, 5))
-        startFridge.addItem(new Items(item1Name, ItemType.PIZZA, -3))
+        startFridge.addItem(createItem(item1Name, ItemType.PIZZA, 5))
+        startFridge.addItem(createItem(item2Name, ItemType.PIZZA, 5))
+        startFridge.addItem(createItem(item1Name, ItemType.PIZZA, -3))
 
         when:
         Refrigerator createdFridge = mongo.createOrUpdate(startFridge)
@@ -45,14 +45,14 @@ class DatabaseTest extends Specification {
 
         Refrigerator startFridge1 = new Refrigerator()
         startFridge1.setName(fridgeName)
-        startFridge1.addItem(new Items(item1Name, ItemType.PIZZA, 5))
-        startFridge1.addItem(new Items(item2Name, ItemType.PIZZA, 5))
-        startFridge1.addItem(new Items(item1Name, ItemType.PIZZA, -3))
+        startFridge1.addItem(createItem(item1Name, ItemType.PIZZA, 5))
+        startFridge1.addItem(createItem(item2Name, ItemType.PIZZA, 5))
+        startFridge1.addItem(createItem(item1Name, ItemType.PIZZA, -3))
 
         Refrigerator startFridge2 = new Refrigerator()
         startFridge2.setName(fridgeName)
-        startFridge2.addItem(new Items(item2Name, ItemType.CHEESE, 10))
-        startFridge2.addItem(new Items(item2Name, ItemType.PIZZA, 10))
+        startFridge2.addItem(createItem(item2Name, ItemType.CHEESE, 10))
+        startFridge2.addItem(createItem(item2Name, ItemType.PIZZA, 10))
 
         Refrigerator startFridge3 = new Refrigerator()
         startFridge3.setName(fridgeName)
@@ -70,9 +70,9 @@ class DatabaseTest extends Specification {
         then:
         assert deleteCount == 1
         assert finalFridge.getItems().size() == 2
-        assert finalFridge.getItems().get(new Items(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
-        assert finalFridge.getItems().get(new Items(item2Name, ItemType.PIZZA, 0).getKey()) == null
-        assert finalFridge.getItems().get(new Items(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
+        assert finalFridge.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
+        assert finalFridge.getItems().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
+        assert finalFridge.getItems().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
     }
 
 
@@ -85,17 +85,17 @@ class DatabaseTest extends Specification {
 
         Refrigerator startFridge1 = new Refrigerator()
         startFridge1.setName(fridgeName1)
-        startFridge1.addItem(new Items(item1Name, ItemType.SODA, 5))
-        startFridge1.addItem(new Items(item2Name, ItemType.SODA, 7))
+        startFridge1.addItem(createItem(item1Name, ItemType.SODA, 5))
+        startFridge1.addItem(createItem(item2Name, ItemType.SODA, 7))
 
         Refrigerator startFridge2 = new Refrigerator()
         startFridge2.setName(fridgeName2)
-        startFridge2.addItem(new Items(item2Name, ItemType.SODA, 5))
-        startFridge2.addItem(new Items(item2Name, ItemType.SODA, 8))
+        startFridge2.addItem(createItem(item2Name, ItemType.SODA, 5))
+        startFridge2.addItem(createItem(item2Name, ItemType.SODA, 8))
 
         Refrigerator startFridge3 = new Refrigerator()
         startFridge3.setName(fridgeName1)
-        startFridge3.addItem(new Items(item2Name, ItemType.SODA, 1))
+        startFridge3.addItem(createItem(item2Name, ItemType.SODA, 1))
 
         when:
         try { //work
@@ -117,7 +117,14 @@ class DatabaseTest extends Specification {
         assert deleteCount1 == 1
         assert deleteCount2 == 0
         assert finalFridge1.getItems().size() == 2
-        assert finalFridge1.getItems().get(new Items(item1Name, ItemType.SODA, 0).getKey()).getCount() == 5
-        assert finalFridge1.getItems().get(new Items(item2Name, ItemType.SODA, 0).getKey()).getCount() == 7
+        assert finalFridge1.getItems().get(createItem(item1Name, ItemType.SODA, 0).getKey()).getCount() == 5
+        assert finalFridge1.getItems().get(createItem(item2Name, ItemType.SODA, 0).getKey()).getCount() == 7
+    }
+
+    Items createItem(String name, ItemType type, int count) {
+        Items theItem = new Items()
+        theItem.setName(name)
+        theItem.setType(type)
+        theItem.setCount(count)
     }
 }
