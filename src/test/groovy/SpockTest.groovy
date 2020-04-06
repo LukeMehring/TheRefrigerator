@@ -1,15 +1,26 @@
+import luke.mehring.fridge.FridgeMain
+import ratpack.http.client.ReceivedResponse
+import ratpack.http.client.RequestSpec
+import ratpack.test.MainClassApplicationUnderTest
+import ratpack.test.http.TestHttpClient
+import spock.lang.AutoCleanup
+import spock.lang.Shared
 import spock.lang.Specification
- 
+
 class SpockTest extends Specification {
+
+    MainClassApplicationUnderTest appUnderTest = new MainClassApplicationUnderTest(FridgeMain.class)
 
     def "First Spock Test Temp"() {
         given:
+        TestHttpClient client = appUnderTest.getHttpClient()
 
         when:
-        String a = "Test"
-        String b = "Test2"
+        ReceivedResponse getAllResp = client.request("refrigerator/all", { RequestSpec req ->
+            req.method("GET")
+        })
 
         then:
-        assert a != b
+        assert getAllResp.getStatusCode() == 200
     }
 }
