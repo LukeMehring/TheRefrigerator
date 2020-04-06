@@ -11,7 +11,7 @@ import spock.lang.Specification
 
 class EndPointTest extends Specification {
 
-    MainClassApplicationUnderTest appUnderTest = new MainClassApplicationUnderTest(FridgeMain.class)
+    MainClassApplicationUnderTest appUnderTest = new MainClassApplicationUnderTest(FridgeMain)
     ObjectMapper mapper = new ObjectMapper();
 
     def "End point test"(){
@@ -48,7 +48,7 @@ class EndPointTest extends Specification {
         Refrigerator startFridge2Created = callFridgeWithBody(client, startFridge2)
         Refrigerator startFridge3Created = callFridgeWithBody(client, startFridge3)
 
-        ReceivedResponse getAllResp = client.request("refrigerator/all", { RequestSpec req ->
+        ReceivedResponse getAllResp = client.request("all", { RequestSpec req ->
             req.method("GET")
             req.basicAuth("username", "username")
         })
@@ -56,7 +56,7 @@ class EndPointTest extends Specification {
         List<Refrigerator> allList = mapper.readValue(getAllResp.body.getText(), mapper.getTypeFactory().constructCollectionType(List.class, Refrigerator.class)) as List<Refrigerator>
 
         //Get Single
-        ReceivedResponse responseGetSingle = client.request("refrigerator/get/" + fridgeName2, { RequestSpec req ->
+        ReceivedResponse responseGetSingle = client.request("get/" + fridgeName2,{ RequestSpec req ->
             req.method("GET")
             req.basicAuth("username", "username")
         })
@@ -64,13 +64,13 @@ class EndPointTest extends Specification {
         Refrigerator singleGetResponse = mapper.readValue(responseGetSingle.getBody().getText(),  Refrigerator.class)
 
         //Delete1
-        ReceivedResponse responseDelete1 = client.request("refrigerator/" + fridgeName2 + "/delete", { RequestSpec req ->
+        ReceivedResponse responseDelete1 = client.request(fridgeName2 + "/delete", { RequestSpec req ->
             req.method("DELETE")
             req.basicAuth("username", "username")
         })
         assert responseDelete1.getStatusCode() == 200 //Make sure it worked
         //Delete2
-        ReceivedResponse responseDelete2 = client.request("refrigerator/" + fridgeName1 + "/delete", { RequestSpec req ->
+        ReceivedResponse responseDelete2 = client.request(fridgeName1 + "/delete", { RequestSpec req ->
             req.method("DELETE")
             req.basicAuth("username", "username")
         })
@@ -86,7 +86,7 @@ class EndPointTest extends Specification {
     }
 
     Refrigerator callFridgeWithBody(TestHttpClient client, Refrigerator refrigerator) {
-        ReceivedResponse responsePost = client.request("refrigerator/post", { RequestSpec req ->
+        ReceivedResponse responsePost = client.request(refrigerator.getName() + "/save", { RequestSpec req ->
             req.method("POST")
             req.getBody().text(mapper.writeValueAsString(refrigerator))
             req.basicAuth("username", "username")

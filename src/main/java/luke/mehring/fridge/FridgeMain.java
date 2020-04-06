@@ -3,6 +3,7 @@ package luke.mehring.fridge;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import luke.mehring.fridge.database.MongoDatabase;
 import luke.mehring.fridge.database.Refrigerator;
+import org.pac4j.http.client.direct.DirectBasicAuthClient;
 import org.pac4j.http.client.indirect.IndirectBasicAuthClient;
 import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordAuthenticator;
 import org.slf4j.Logger;
@@ -29,9 +30,9 @@ public class FridgeMain {
                         .module(SessionModule.class)
                 ))
                 .handlers(chain -> chain
-                    .all(ratpack.pac4j.RatpackPac4j.authenticator(new IndirectBasicAuthClient(new SimpleTestUsernamePasswordAuthenticator())))
-                    .prefix("refrigerator", empChain -> { //Fridge Calls
-                        empChain.get("all", ctx -> {  //getAll
+                        .all(ratpack.pac4j.RatpackPac4j.authenticator(new DirectBasicAuthClient(new SimpleTestUsernamePasswordAuthenticator())))
+                        .all(RatpackPac4j.requireAuth(DirectBasicAuthClient.class))
+                        .get("all", ctx -> {  //getAll
                             logger.debug("Retrieving all refrigerators via RESTAPI");
                             ctx.render(json(mongo.getAll()));
                         })
@@ -40,14 +41,14 @@ public class FridgeMain {
                             logger.debug("Retrieving one refrigerator "+name+" via RESTAPI");
                             ctx.render(json(mongo.getRefrigerator(name)));
                         })
-                        .post("post", ctx -> { //create
+                        .post(":name/save", ctx -> { //create
                             ctx.getRequest().getBody().then(data -> {
                                 Refrigerator request = mapper.readValue(data.getText(), Refrigerator.class);
                                 logger.debug("Creating one refrigerator ("+request.getName()+") via RESTAPI");
                                 ctx.render(json(mongo.createOrUpdate(request)));
                             });
                         })
-                        .put("put", ctx -> { //update
+                        .put(":name/save", ctx -> { //update
                             ctx.getRequest().getBody().then(data -> {
                                 Refrigerator request = mapper.readValue(data.getText(), Refrigerator.class);
                                 logger.debug("Updating one refrigerator ("+request.getName()+") via RESTAPI");
@@ -58,8 +59,6 @@ public class FridgeMain {
                             String name = ctx.getPathTokens().get("name");
                             logger.debug("Deleting one refrigerator "+name+" via RESTAPI");
                             ctx.render(json(mongo.deleteRefrigerator(name)));
-                        });
-                    })
-                ));
+                        })));
     }
-} 
+}
