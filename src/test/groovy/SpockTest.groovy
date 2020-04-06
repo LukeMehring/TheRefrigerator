@@ -3,8 +3,6 @@ import ratpack.http.client.ReceivedResponse
 import ratpack.http.client.RequestSpec
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.http.TestHttpClient
-import spock.lang.AutoCleanup
-import spock.lang.Shared
 import spock.lang.Specification
 
 class SpockTest extends Specification {

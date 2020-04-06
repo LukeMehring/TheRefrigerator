@@ -1,5 +1,6 @@
 package luke.mehring.fridge;
 
+import luke.mehring.fridge.database.MongoDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.server.RatpackServer;
@@ -9,6 +10,10 @@ public class FridgeMain {
     private static final Logger logger = LoggerFactory.getLogger(FridgeMain.class);
 
     public static void main(String args[]) throws Exception {
+        //Get MongoDB connection going
+        MongoDatabase mongo = new MongoDatabase();
+
+        //Start the RATPACK
         RatpackServer.start(server -> server.handlers(chain -> chain
                 .prefix("refrigerator", empChain -> { //Fridge Calls
                     empChain.get("all", ctx -> {  //getAll
