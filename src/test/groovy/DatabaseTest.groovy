@@ -14,15 +14,23 @@ class DatabaseTest extends Specification {
 
     def "Refrigerator Saves"() {
         given:
-        Refrigerator fridge = new Refrigerator()
-        fridge.setName("Fridge-1")
-        fridge.addItem(new Items("Item-1", ItemType.PIZZA, 5))
+        String fridgeName = "Fridge-1"
+        String item1Name = "Item-1"
+        String item2Name = "Item-2"
+
+        Refrigerator startFridge = new Refrigerator()
+        startFridge.setName(fridgeName)
+        startFridge.addItem(new Items(item1Name, ItemType.PIZZA, 5))
+        startFridge.addItem(new Items(item2Name, ItemType.PIZZA, 5))
+        startFridge.addItem(new Items(item1Name, ItemType.PIZZA, -3))
 
         when:
-        mongo.createOrUpdate(fridge)
+        Refrigerator createdFridge = mongo.createOrUpdate(startFridge)
+        Refrigerator getFridge = mongo.getRefrigerator(startFridge.getName())
 
 
         then:
-        assert 200 == 200
+        assert startFridge.equals(createdFridge)
+        assert startFridge.equals(getFridge)
     }
 }

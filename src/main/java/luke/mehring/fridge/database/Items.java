@@ -30,6 +30,22 @@ public class Items {
         return itemDoc;
     }
 
+    public boolean equals(Object o) {
+        if (!(o instanceof Items)) return false;
+        Items that = (Items)o;
+        return that.getName().equals(this.getName()) &&
+                that.getCount() == this.getCount() &&
+                that.getType() == this.getType();
+    }
+
+    public String toString() {
+        return "{name="+getName()+",type="+getType()+",count="+getCount()+"}";
+    }
+
+    public int hashCode() {
+        return getKey().hashCode();
+    }
+
     public String getName() {
         return name;
     }

@@ -3,7 +3,8 @@ package luke.mehring.fridge.database;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Refrigerator {
@@ -14,9 +15,25 @@ public class Refrigerator {
 
     public Refrigerator (BasicDBObject dbObject) {
         setName(dbObject.getString("name"));
-        ((BasicDBList)dbObject.get("items")).stream().map(item -> new Items((BasicDBObject)item))
-                .collect(Collectors.toMap(item -> item.getKey(), item -> item));
+        setItems(((BasicDBList)dbObject.get("items")).stream().map(item -> new Items((BasicDBObject)item))
+                .collect(Collectors.toMap(item -> item.getKey(), item -> item)));
 
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Refrigerator)) return false;
+        Refrigerator that = (Refrigerator)o;
+        if (!that.getName().equals(this.getName())) return false;
+        if (!that.getItems().equals(this.getItems())) return false;
+        return true;
+    }
+
+    public String toString() {
+        return "{name="+getName()+",items="+getItems().values().toString()+"}";
+    }
+
+    public int hashCode() {
+        return name.hashCode();
     }
 
     public BasicDBObject getDBDocument() {
