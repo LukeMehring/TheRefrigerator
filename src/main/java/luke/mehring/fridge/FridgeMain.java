@@ -44,7 +44,7 @@ public class FridgeMain {
                             ctx.render(json(mongo.createOrUpdate(request)));
                         });
                     })
-                    .delete(":name", ctx -> { // Delete fridge by ID
+                    .delete(":name/delete", ctx -> { // Delete fridge by ID
                         String name = ctx.getPathTokens().get("name");
                         logger.debug("Deleting one refrigerator "+name+" via RESTAPI");
                         ctx.render(json(mongo.deleteRefrigerator(name)));

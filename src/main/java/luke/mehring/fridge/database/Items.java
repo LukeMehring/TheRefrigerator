@@ -1,5 +1,6 @@
 package luke.mehring.fridge.database;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
 
 public class Items {
@@ -70,6 +71,7 @@ public class Items {
         this.count = count;
     }
 
+    @JsonIgnore
     public String getKey() {
         return name + "|" + type;
     }
