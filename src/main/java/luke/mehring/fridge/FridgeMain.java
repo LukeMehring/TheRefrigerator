@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.server.RatpackServer;
 
+import static ratpack.jackson.Jackson.json;
+
 public class FridgeMain {
 
     private static final Logger logger = LoggerFactory.getLogger(FridgeMain.class);
@@ -18,28 +20,25 @@ public class FridgeMain {
                 .prefix("refrigerator", empChain -> { //Fridge Calls
                     empChain.get("all", ctx -> {  //getAll
                         logger.debug("Retrieving all refrigerators via RESTAPI");
-                        ctx.render("Get All");
+                        ctx.render(json(mongo.getAll()));
                     })
-                    .get(":id", ctx -> { //get single fridge ID
-                        Long id = Long.valueOf(ctx.getPathTokens().get("id"));
-                        logger.debug("Retrieving one refrigerator "+id+" via RESTAPI");
-                        ctx.render("Get " + id);
+                    .get(":name", ctx -> { //get single fridge ID
+                        String name = ctx.getPathTokens().get("name");
+                        logger.debug("Retrieving one refrigerator "+name+" via RESTAPI");
+                        ctx.render(json(mongo.getRefrigerator(name)));
                     })
                     .post(ctx -> { //create
-
                         logger.debug("Creating one refrigerator via RESTAPI");
                         ctx.render("Create One");
                     })
                     .put(ctx -> { //update
-
                         logger.debug("Updating one refrigerator via RESTAPI");
                         ctx.render("Update One");
                     })
-                    .delete(":id", ctx -> { // Delete fridge by ID
-                        Long id = Long.valueOf(ctx.getPathTokens().get("id"));
-                        logger.debug("Deleting one refrigerator "+id+" via RESTAPI");
-                        ctx.render("Delete " + id);
-
+                    .delete(":name", ctx -> { // Delete fridge by ID
+                        String name = ctx.getPathTokens().get("name");
+                        logger.debug("Deleting one refrigerator "+name+" via RESTAPI");
+                        ctx.render(json(mongo.deleteRefrigerator(name)));
                     });
                 })));
     } 

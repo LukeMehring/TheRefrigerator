@@ -1,5 +1,7 @@
 package luke.mehring.fridge.database;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -51,6 +53,17 @@ public class MongoDatabase {
 
     private MongoCollection<BasicDBObject> getCollection() {
         return mongo.getDatabase(DB_NAME).getCollection(COLLECTION_NAME, BasicDBObject.class);
+    }
+
+    public List<Refrigerator> getAll() {
+
+        MongoCollection collection = getCollection();
+        FindIterable<BasicDBObject> findIterable = collection.find();
+        List<Refrigerator> result = new ArrayList<>();
+        for (BasicDBObject obj : findIterable) {
+            result.add(new Refrigerator(obj));
+        }
+        return result;
     }
 
     public Refrigerator getRefrigerator(String name) throws NoFridgesExcpetion, TooManyFridgesExcpetion {
