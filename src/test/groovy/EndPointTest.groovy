@@ -100,5 +100,6 @@ class EndPointTest extends Specification {
         theItem.setName(name)
         theItem.setType(type)
         theItem.setCount(count)
+        return theItem
     }
 }

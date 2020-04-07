@@ -32,7 +32,7 @@ class DatabaseTest extends Specification {
         then:
         assert deleteCount == 1
         assert startFridge.getItems().size() == 2
-        assert startFridge.getItems().get(new Items(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
+        assert startFridge.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
         assert startFridge.equals(createdFridge)
         assert startFridge.equals(getFridge)
     }
@@ -56,7 +56,7 @@ class DatabaseTest extends Specification {
 
         Refrigerator startFridge3 = new Refrigerator()
         startFridge3.setName(fridgeName)
-        startFridge3.addItem(new Items(item2Name, ItemType.PIZZA, -16))
+        startFridge3.addItem(createItem(item2Name, ItemType.PIZZA, -16))
 
         when:
         mongo.createOrUpdate(startFridge1)
@@ -126,5 +126,6 @@ class DatabaseTest extends Specification {
         theItem.setName(name)
         theItem.setType(type)
         theItem.setCount(count)
+        return theItem
     }
 }
