@@ -79,10 +79,10 @@ class EndPointTest extends Specification {
         then:
         altFridge1Created.equals(altFridge1)
         allList.size() == 2
-        singleGetResponse.getItems().size() == 2
-        singleGetResponse.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
-        singleGetResponse.getItems().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
-        singleGetResponse.getItems().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
+        singleGetResponse.getItemsMap().size() == 2
+        singleGetResponse.getItemsMap().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
+        singleGetResponse.getItemsMap().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
+        singleGetResponse.getItemsMap().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
     }
 
     Refrigerator callFridgeWithBody(TestHttpClient client, Refrigerator refrigerator) {

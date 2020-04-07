@@ -15,7 +15,7 @@ public class RefrigeratorItemValidator {
 
     private static void checkSodaLevels(Refrigerator fridge) throws RefrigeratorValidationException {
         //Get sums of soda Levels
-        int sodaLevel = fridge.getItems().values().stream().filter(item -> item.getType() == ItemType.SODA).mapToInt(Items::getCount).sum();
+        int sodaLevel = fridge.getItemsMap().values().stream().filter(item -> item.getType() == ItemType.SODA).mapToInt(Items::getCount).sum();
         if (sodaLevel > MAX_SODA) {
             throw new RefrigeratorValidationException(ItemType.SODA.getValue() + " is over the limit of " + MAX_SODA);
         }

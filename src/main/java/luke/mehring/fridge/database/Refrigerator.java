@@ -3,6 +3,8 @@ package luke.mehring.fridge.database;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 
+import java.beans.Transient;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,7 +17,7 @@ public class Refrigerator {
 
     public Refrigerator (BasicDBObject dbObject) {
         setName(dbObject.getString("name"));
-        setItems(((BasicDBList)dbObject.get("items")).stream().map(item -> new Items((BasicDBObject)item))
+        setItemsMap(((BasicDBList)dbObject.get("items")).stream().map(item -> new Items((BasicDBObject)item))
                 .collect(Collectors.toMap(item -> item.getKey(), item -> item)));
 
     }
@@ -24,42 +26,43 @@ public class Refrigerator {
         if (!(o instanceof Refrigerator)) return false;
         Refrigerator that = (Refrigerator)o;
         if (!that.getName().equals(this.getName())) return false;
-        if (!that.getItems().equals(this.getItems())) return false;
+        if (!that.getItemsMap().equals(this.getItemsMap())) return false;
         return true;
     }
 
     public String toString() {
-        return "{name="+getName()+",items="+getItems().values().toString()+"}";
+        return "{name="+getName()+",items="+ getItemsMap().values().toString()+"}";
     }
 
     public int hashCode() {
         return name.hashCode();
     }
 
+    @Transient
     public BasicDBObject getDBDocument() {
         BasicDBObject fridgeDoc = new BasicDBObject();
         fridgeDoc.put("name", getName());
-        fridgeDoc.put("items", getItems().values().stream().map(Items::getDBDocument).collect(Collectors.toList()));
+        fridgeDoc.put("items", getItemsMap().values().stream().map(Items::getDBDocument).collect(Collectors.toList()));
         return fridgeDoc;
     }
 
     public void update(Refrigerator that) {
         this.setName(that.getName());
 
-        that.getItems().values().stream().forEach(this::addItem);
+        that.getItemsMap().values().stream().forEach(this::addItem);
     }
 
     public void addItem(Items item) {
-        Items oldItem = getItems().get(item.getKey());
+        Items oldItem = getItemsMap().get(item.getKey());
         if (oldItem == null) {
-            getItems().put(item.getKey(), item);
+            getItemsMap().put(item.getKey(), item);
         } else {
             int newCount = oldItem.getCount() + item.getCount();
             if (newCount > 0) {
                 oldItem.setCount(newCount);
             } else {
                 //If its zero or lower, we can just remove
-                getItems().remove(item.getKey());
+                getItemsMap().remove(item.getKey());
             }
         }
     }
@@ -73,11 +76,21 @@ public class Refrigerator {
         this.name = name;
     }
 
-    public Map<String, Items> getItems() {
+    public Collection<Items> getItems() {
+        return items.values();
+    }
+
+    public void setItems(Collection<Items> items) {
+        this.setItemsMap(items.stream().collect(Collectors.toMap(item -> item.getKey(), item -> item)));
+    }
+
+    @Transient
+    public Map<String, Items> getItemsMap() {
         return items;
     }
 
-    public void setItems(Map<String, Items> items) {
+    @Transient
+    public void setItemsMap(Map<String, Items> items) {
         this.items = items;
     }
 }

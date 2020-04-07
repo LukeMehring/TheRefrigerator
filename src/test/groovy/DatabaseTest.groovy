@@ -31,8 +31,8 @@ class DatabaseTest extends Specification {
 
         then:
         deleteCount == 1
-        startFridge.getItems().size() == 2
-        startFridge.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
+        startFridge.getItemsMap().size() == 2
+        startFridge.getItemsMap().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
         startFridge.equals(createdFridge)
         startFridge.equals(getFridge)
     }
@@ -69,10 +69,10 @@ class DatabaseTest extends Specification {
 
         then:
         deleteCount == 1
-        finalFridge.getItems().size() == 2
-        finalFridge.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
-        finalFridge.getItems().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
-        finalFridge.getItems().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
+        finalFridge.getItemsMap().size() == 2
+        finalFridge.getItemsMap().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
+        finalFridge.getItemsMap().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
+        finalFridge.getItemsMap().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
     }
 
 
@@ -116,9 +116,9 @@ class DatabaseTest extends Specification {
         then:
         deleteCount1 == 1
         deleteCount2 == 0
-        finalFridge1.getItems().size() == 2
-        finalFridge1.getItems().get(createItem(item1Name, ItemType.SODA, 0).getKey()).getCount() == 5
-        finalFridge1.getItems().get(createItem(item2Name, ItemType.SODA, 0).getKey()).getCount() == 7
+        finalFridge1.getItemsMap().size() == 2
+        finalFridge1.getItemsMap().get(createItem(item1Name, ItemType.SODA, 0).getKey()).getCount() == 5
+        finalFridge1.getItemsMap().get(createItem(item2Name, ItemType.SODA, 0).getKey()).getCount() == 7
     }
 
     Items createItem(String name, ItemType type, int count) {
