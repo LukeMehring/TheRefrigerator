@@ -4,6 +4,7 @@ public enum ItemType {
 
     PIZZA("PIZZA"),
     SODA("SODA"),
+    OTHER("OTHER"),
     CHEESE("CHEESE");
 
 
