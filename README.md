@@ -24,4 +24,9 @@ This project requires Java 11
 ./gradlew run
 ```
 
+## To Run in Docker
+``` 
+./gradlew clean build distTar; docker-compose build; docker-compose up
+```
+
 

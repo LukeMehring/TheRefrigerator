@@ -1,0 +1,12 @@
+version: '3'
+services:
+  mongo:
+    image: "mongo:4.0.17"
+  api:
+    build: .
+    ports:
+      - "5050:5050"
+    environment:
+      - RATPACK_MONGO_HOSTNAME=mongo
+    depends_on:
+      - mongo

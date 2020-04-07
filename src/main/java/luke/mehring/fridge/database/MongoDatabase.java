@@ -26,7 +26,13 @@ public class MongoDatabase {
     private MongoClient mongo;
 
     public MongoDatabase() {
-        mongo = new MongoClient( "localhost" , 12345 );
+        String hostname = System.getenv("RATPACK_MONGO_HOSTNAME");
+
+        if (hostname == null) {
+            hostname = "localhost";
+        }
+
+        mongo = new MongoClient( hostname , 27017 );
         logger.debug("Connected to MongoDB");
         initDB();
     }

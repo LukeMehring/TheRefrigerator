@@ -46,7 +46,7 @@ sourceSets {
 }
 
 mongo {
-    port 12345
+    port 27017
     logging 'console'
 }
 
