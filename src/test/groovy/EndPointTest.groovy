@@ -52,7 +52,7 @@ class EndPointTest extends Specification {
             req.method("GET")
             req.basicAuth("username", "username")
         })
-        assert getAllResp.getStatusCode() == 200 //Make sure it worked
+        getAllResp.getStatusCode() == 200 //Make sure it worked
         List<Refrigerator> allList = mapper.readValue(getAllResp.body.getText(), mapper.getTypeFactory().constructCollectionType(List.class, Refrigerator.class)) as List<Refrigerator>
 
         //Get Single
@@ -60,7 +60,7 @@ class EndPointTest extends Specification {
             req.method("GET")
             req.basicAuth("username", "username")
         })
-        assert responseGetSingle.getStatusCode() == 200 //Make sure it worked
+        responseGetSingle.getStatusCode() == 200 //Make sure it worked
         Refrigerator singleGetResponse = mapper.readValue(responseGetSingle.getBody().getText(),  Refrigerator.class)
 
         //Delete1
@@ -68,21 +68,21 @@ class EndPointTest extends Specification {
             req.method("DELETE")
             req.basicAuth("username", "username")
         })
-        assert responseDelete1.getStatusCode() == 200 //Make sure it worked
+        responseDelete1.getStatusCode() == 200 //Make sure it worked
         //Delete2
         ReceivedResponse responseDelete2 = client.request("fridges/" + fridgeName1, { RequestSpec req ->
             req.method("DELETE")
             req.basicAuth("username", "username")
         })
-        assert responseDelete2.getStatusCode() == 200 //Make sure it worked
+        responseDelete2.getStatusCode() == 200 //Make sure it worked
 
         then:
-        assert altFridge1Created.equals(altFridge1)
-        assert allList.size() == 2
-        assert singleGetResponse.getItems().size() == 2
-        assert singleGetResponse.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
-        assert singleGetResponse.getItems().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
-        assert singleGetResponse.getItems().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
+        altFridge1Created.equals(altFridge1)
+        allList.size() == 2
+        singleGetResponse.getItems().size() == 2
+        singleGetResponse.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
+        singleGetResponse.getItems().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
+        singleGetResponse.getItems().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
     }
 
     Refrigerator callFridgeWithBody(TestHttpClient client, Refrigerator refrigerator) {
@@ -91,7 +91,7 @@ class EndPointTest extends Specification {
             req.getBody().text(mapper.writeValueAsString(refrigerator))
             req.basicAuth("username", "username")
         })
-        assert responsePost.getStatusCode() == 200 //make sure it worked
+        responsePost.getStatusCode() == 200 //make sure it worked
         return mapper.readValue(responsePost.getBody().getText(),  Refrigerator.class)
     }
 

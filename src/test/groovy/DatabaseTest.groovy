@@ -30,11 +30,11 @@ class DatabaseTest extends Specification {
         int deleteCount = mongo.deleteRefrigerator(startFridge.getName())
 
         then:
-        assert deleteCount == 1
-        assert startFridge.getItems().size() == 2
-        assert startFridge.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
-        assert startFridge.equals(createdFridge)
-        assert startFridge.equals(getFridge)
+        deleteCount == 1
+        startFridge.getItems().size() == 2
+        startFridge.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
+        startFridge.equals(createdFridge)
+        startFridge.equals(getFridge)
     }
 
     def "Refrigerator Item Math over multiple saves"() {
@@ -68,11 +68,11 @@ class DatabaseTest extends Specification {
         int deleteCount = mongo.deleteRefrigerator(fridgeName)
 
         then:
-        assert deleteCount == 1
-        assert finalFridge.getItems().size() == 2
-        assert finalFridge.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
-        assert finalFridge.getItems().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
-        assert finalFridge.getItems().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
+        deleteCount == 1
+        finalFridge.getItems().size() == 2
+        finalFridge.getItems().get(createItem(item1Name, ItemType.PIZZA, 0).getKey()).getCount() == 2
+        finalFridge.getItems().get(createItem(item2Name, ItemType.PIZZA, 0).getKey()) == null
+        finalFridge.getItems().get(createItem(item2Name, ItemType.CHEESE, 0).getKey()).getCount() == 10
     }
 
 
@@ -114,11 +114,11 @@ class DatabaseTest extends Specification {
         int deleteCount2 = mongo.deleteRefrigerator(fridgeName2)
 
         then:
-        assert deleteCount1 == 1
-        assert deleteCount2 == 0
-        assert finalFridge1.getItems().size() == 2
-        assert finalFridge1.getItems().get(createItem(item1Name, ItemType.SODA, 0).getKey()).getCount() == 5
-        assert finalFridge1.getItems().get(createItem(item2Name, ItemType.SODA, 0).getKey()).getCount() == 7
+        deleteCount1 == 1
+        deleteCount2 == 0
+        finalFridge1.getItems().size() == 2
+        finalFridge1.getItems().get(createItem(item1Name, ItemType.SODA, 0).getKey()).getCount() == 5
+        finalFridge1.getItems().get(createItem(item2Name, ItemType.SODA, 0).getKey()).getCount() == 7
     }
 
     Items createItem(String name, ItemType type, int count) {
