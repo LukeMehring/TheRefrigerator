@@ -3,6 +3,8 @@ package luke.mehring.fridge.database;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
 
+import java.beans.Transient;
+
 public class Items {
     private String name;
     private ItemType type;
@@ -17,6 +19,7 @@ public class Items {
         this.setCount(dbObj.getInt("count"));
     }
 
+    @JsonIgnore
     public BasicDBObject getDBDocument() {
         BasicDBObject itemDoc = new BasicDBObject();
         itemDoc.put("name", getName());

@@ -1,5 +1,6 @@
 package luke.mehring.fridge.database;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 
@@ -38,7 +39,7 @@ public class Refrigerator {
         return name.hashCode();
     }
 
-    @Transient
+    @JsonIgnore
     public BasicDBObject getDBDocument() {
         BasicDBObject fridgeDoc = new BasicDBObject();
         fridgeDoc.put("name", getName());
@@ -84,12 +85,12 @@ public class Refrigerator {
         this.setItemsMap(items.stream().collect(Collectors.toMap(item -> item.getKey(), item -> item)));
     }
 
-    @Transient
+    @JsonIgnore
     public Map<String, Items> getItemsMap() {
         return items;
     }
 
-    @Transient
+    @JsonIgnore
     public void setItemsMap(Map<String, Items> items) {
         this.items = items;
     }
