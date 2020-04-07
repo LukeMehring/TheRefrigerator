@@ -10,14 +10,18 @@ What's in the fridge?
 This project requires Java 11
 
 ## To Compile
-
 ``` 
 ./gradlew jar
 ```
 
 ## To Run Tests
-
 ``` 
 ./gradlew test
 ```
+
+## To Run in shell
+``` 
+./gradlew run
+```
+
 

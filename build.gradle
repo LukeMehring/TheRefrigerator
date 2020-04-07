@@ -17,6 +17,8 @@ repositories {
     jcenter()
 }
 
+mainClassName = "luke.mehring.fridge.FridgeMain"
+
 dependencies {
 
     testImplementation "junit:junit:4.12"
@@ -56,6 +58,7 @@ test {
 
 startMongoDb.dependsOn stopMongoDb
 test.dependsOn startMongoDb
+run.dependsOn startMongoDb
 task integrationTest(type: Test) {
     runWithMongoDb = true
 }
